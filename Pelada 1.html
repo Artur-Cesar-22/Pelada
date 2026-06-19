@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Súmula da Pelada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Work+Sans:wght@400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+  :root{
+    --grass-dark:#13301E;
+    --grass:#1E4A2C;
+    --grass-light:#2E6B3E;
+    --chalk:#F4F1E6;
+    --gold:#E8B33D;
+    --gold-dark:#A87A1C;
+    --ink:#15201A;
+    --card:#FBFAF4;
+    --card-line:#E1DCC9;
+    --win:#2E6B3E;
+    --win-bg:#E2EEDE;
+    --draw:#A87A1C;
+    --draw-bg:#F6E9D2;
+    --loss:#A33A2C;
+    --loss-bg:#F4DFD9;
+    --muted:#6B7268;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--grass-dark);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 64px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 64px),
+      linear-gradient(180deg, var(--grass) 0%, var(--grass-dark) 100%);
+    font-family:'Work Sans', sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:980px; margin:0 auto;}
+
+  header.hero{
+    text-align:center;
+    color:var(--chalk);
+    padding:18px 0 26px;
+    position:relative;
+  }
+  header.hero .eyebrow{
+    font-family:'Oswald', sans-serif;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--gold);
+    margin-bottom:6px;
+  }
+  header.hero h1{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    font-size:clamp(34px,6vw,56px);
+    letter-spacing:.02em;
+    margin:0;
+    text-transform:uppercase;
+  }
+  header.hero .sub{
+    font-size:14px;
+    color:#CFE3D3;
+    margin-top:6px;
+  }
+  .halfway{
+    display:flex; align-items:center; gap:14px;
+    margin:18px 0 22px;
+  }
+  .halfway::before, .halfway::after{
+    content:""; flex:1; height:1px;
+    background:rgba(244,241,230,0.35);
+  }
+  .halfway .circle{
+    width:14px; height:14px; border-radius:50%;
+    border:1.5px solid rgba(244,241,230,0.5);
+  }
+
+  nav.tabs{
+    display:flex; gap:8px; flex-wrap:wrap;
+    justify-content:center;
+    margin-bottom:22px;
+  }
+  nav.tabs button{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    font-size:13px;
+    font-weight:500;
+    background:rgba(244,241,230,0.08);
+    color:var(--chalk);
+    border:1px solid rgba(244,241,230,0.25);
+    padding:10px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  nav.tabs button:hover{background:rgba(244,241,230,0.16);}
+  nav.tabs button.active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:#3A2A06;
+  }
+
+  section.panel{display:none;}
+  section.panel.active{display:block;}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-line);
+    border-radius:14px;
+    padding:22px 24px;
+    margin-bottom:18px;
+  }
+  .card h2{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    font-size:16px;
+    font-weight:600;
+    margin:0 0 4px;
+    color:var(--grass-dark);
+    display:flex; align-items:center; gap:8px;
+  }
+  .card h2 .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:22px; height:22px; border-radius:50%;
+    background:var(--grass-dark); color:var(--chalk);
+    font-family:'Anton',sans-serif; font-size:12px;
+  }
+  .card .hint{font-size:13px; color:var(--muted); margin:0 0 16px;}
+
+  label{font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; display:block; margin-bottom:4px;}
+  select{
+    width:100%;
+    border:1px solid var(--card-line);
+    background:#fff;
+    border-radius:8px;
+    padding:9px 11px;
+    font-size:14px;
+    font-family:'Work Sans', sans-serif;
+    color:var(--ink);
+  }
+  select:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  input[type=text], input[type=date], input[type=number]{
+    width:100%;
+    border:1px solid var(--card-line);
+    background:#fff;
+    border-radius:8px;
+    padding:9px 11px;
+    font-size:14px;
+    font-family:'Work Sans', sans-serif;
+    color:var(--ink);
+  }
+  input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+
+  .row{display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;}
+  .row > div{flex:1; min-width:140px;}
+
+  button.btn{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    font-size:13px; font-weight:600;
+    border:none; border-radius:8px;
+    padding:10px 16px;
+    cursor:pointer;
+    background:var(--grass-dark);
+    color:var(--chalk);
+    transition:.15s;
+  }
+  button.btn:hover{background:var(--grass);}
+  button.btn.gold{background:var(--gold); color:#3A2A06;}
+  button.btn.gold:hover{background:#f0c25a;}
+  button.btn.ghost{background:transparent; color:var(--grass-dark); border:1px solid var(--card-line);}
+  button.btn.ghost:hover{background:#f1efe4;}
+  button.btn.danger{background:transparent; color:var(--loss); border:1px solid var(--loss-bg);}
+  button.btn.danger:hover{background:var(--loss-bg);}
+  button.btn.small{padding:6px 10px; font-size:11px;}
+
+  .player-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    background:#fff; border:1px solid var(--card-line);
+    padding:5px 10px 5px 5px; border-radius:999px;
+    font-size:13px; margin:3px 4px 3px 0;
+  }
+  .player-pill .x{cursor:pointer; color:var(--loss); font-weight:700; padding:0 4px;}
+
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{
+    font-family:'Oswald', sans-serif; text-transform:uppercase; font-size:11px;
+    letter-spacing:.04em; color:var(--muted); text-align:left;
+    border-bottom:2px solid var(--card-line); padding:8px 6px;
+    cursor:pointer; user-select:none;
+  }
+  th:hover{color:var(--grass-dark);}
+  td{padding:8px 6px; border-bottom:1px solid var(--card-line);}
+  tr:last-child td{border-bottom:none;}
+  td.num, th.num{text-align:center;}
+
+  .badge{
+    display:inline-block; min-width:24px; text-align:center;
+    padding:2px 7px; border-radius:6px; font-weight:700; font-size:12px;
+  }
+  .badge.win{background:var(--win-bg); color:var(--win);}
+  .badge.draw{background:var(--draw-bg); color:var(--draw);}
+  .badge.loss{background:var(--loss-bg); color:var(--loss);}
+
+  .team-block{
+    border:1px dashed var(--card-line);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:14px;
+    background:#fff;
+  }
+  .team-block .team-header{
+    display:flex; gap:10px; align-items:flex-end; margin-bottom:10px; flex-wrap:wrap;
+  }
+  .team-header input[type=text]{font-family:'Oswald',sans-serif; font-weight:600; font-size:15px;}
+  .ved-inputs{display:flex; gap:8px;}
+  .ved-inputs div{width:70px;}
+  .ved-inputs label{font-size:10px;}
+
+  .checks{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;}
+  .checks label{
+    display:flex; align-items:center; gap:5px;
+    background:#F4F1E6; border:1px solid var(--card-line);
+    padding:5px 9px; border-radius:7px;
+    font-size:12px; font-weight:500; text-transform:none;
+    color:var(--ink); cursor:pointer;
+  }
+  .checks input{width:auto; margin:0;}
+
+  .empty{
+    text-align:center; padding:36px 20px; color:var(--muted);
+  }
+  .empty .ball{font-size:34px; margin-bottom:8px;}
+
+  .pelada-item{
+    border:1px solid var(--card-line); border-radius:10px;
+    margin-bottom:12px; overflow:hidden; background:#fff;
+  }
+  .pelada-item .ph{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:13px 16px; cursor:pointer; background:#F8F6EE;
+  }
+  .pelada-item .ph .title{font-weight:600; font-family:'Oswald',sans-serif; text-transform:uppercase; font-size:14px;}
+  .pelada-item .ph .meta{font-size:12px; color:var(--muted);}
+  .pelada-item .pb{padding:14px 16px; display:none; border-top:1px solid var(--card-line);}
+  .pelada-item.open .pb{display:block;}
+  .pelada-item .team-result{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:8px 0; border-bottom:1px solid #efece0;
+  }
+  .pelada-item .team-result:last-child{border-bottom:none;}
+  .pelada-actions{display:flex; gap:8px; margin-top:12px;}
+
+  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:18px;}
+  .stat-card{background:#fff; border:1px solid var(--card-line); border-radius:10px; padding:12px 14px; text-align:center;}
+  .stat-card .v{font-family:'Anton',sans-serif; font-size:26px; color:var(--grass-dark);}
+  .stat-card .l{font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);}
+
+  footer{text-align:center; color:rgba(244,241,230,0.5); font-size:12px; margin-top:30px;}
+  .toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    background:var(--grass-dark); color:var(--chalk); padding:10px 18px;
+    border-radius:8px; font-size:13px; opacity:0; transition:.25s; pointer-events:none;
+    font-family:'Oswald',sans-serif; letter-spacing:.03em;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Toda sexta, sem desculpa</div>
+    <h1>Súmula da Pelada</h1>
+    <div class="sub">Gols, assistências e resultado de cada rodada — registrado em campo.</div>
+  </header>
+
+  <div class="halfway"><div class="circle"></div></div>
+
+  <nav class="tabs">
+    <button data-tab="jogadores" class="active">Jogadores</button>
+    <button data-tab="nova" class="">Nova pelada</button>
+    <button data-tab="historico" class="">Histórico</button>
+    <button data-tab="ranking" class="">Ranking</button>
+  </nav>
+
+  <!-- JOGADORES -->
+  <section class="panel active" id="panel-jogadores">
+    <div class="card">
+      <h2><span class="num">1</span>Elenco</h2>
+      <p class="hint">Cadastre todo mundo que joga com vocês. Depois é só escalar nos times de cada pelada.</p>
+      <div class="row">
+        <div>
+          <label>Nome do jogador</label>
+          <input type="text" id="new-player-name" placeholder="Ex: Zé das Couves" maxlength="40">
+        </div>
+        <button class="btn gold" id="add-player-btn">Adicionar</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2><span class="num">2</span>Lista atual</h2>
+      <div id="players-list"><span class="player-pill">Dieguinho<span class="x" onclick="removePlayer('mqkxrh6idg7b83')">×</span></span><span class="player-pill">Valdeci Jr<span class="x" onclick="removePlayer('mqkxro95qi3ax6')">×</span></span><span class="player-pill">Flávio<span class="x" onclick="removePlayer('mqkxrr015nzhwo')">×</span></span><span class="player-pill">Ivanisio<span class="x" onclick="removePlayer('mqkxrth3pw8pjd')">×</span></span><span class="player-pill">Samuel<span class="x" onclick="removePlayer('mqkxruzzwzomzk')">×</span></span><span class="player-pill">Alefe<span class="x" onclick="removePlayer('mqkxrw336ut4d9')">×</span></span><span class="player-pill">Artur Cesar<span class="x" onclick="removePlayer('mqkxs08nir78eq')">×</span></span><span class="player-pill">Caynam<span class="x" onclick="removePlayer('mqkxs2hr9gcib1')">×</span></span><span class="player-pill">Famicio<span class="x" onclick="removePlayer('mqkxs41bf77atq')">×</span></span><span class="player-pill">Matheus<span class="x" onclick="removePlayer('mqkxs7vjcr2dlx')">×</span></span><span class="player-pill">Davi Rosário<span class="x" onclick="removePlayer('mqkxsbmfa5aoqw')">×</span></span><span class="player-pill">Fausto<span class="x" onclick="removePlayer('mqkxsd72js8xov')">×</span></span><span class="player-pill">Betão<span class="x" onclick="removePlayer('mqkxsrjqtip6o0')">×</span></span><span class="player-pill">Daniel<span class="x" onclick="removePlayer('mqkxstha12e2v9')">×</span></span><span class="player-pill">Gabriel Monteiro<span class="x" onclick="removePlayer('mqkxswmuu2ggxm')">×</span></span><span class="player-pill">Thyago (igapó)<span class="x" onclick="removePlayer('mqkxt53w2o2qrm')">×</span></span><span class="player-pill">João Batista<span class="x" onclick="removePlayer('mqkxt8sr2v9awf')">×</span></span><span class="player-pill">Davi Amaral<span class="x" onclick="removePlayer('mqkxtxvvphmfgf')">×</span></span></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">3</span>Backup dos dados</h2>
+      <p class="hint">Os dados ficam salvos neste navegador automaticamente. Se for trocar de computador, mover o arquivo, ou só quiser uma cópia de segurança, use os botões abaixo.</p>
+      <div class="row">
+        <button class="btn ghost" id="export-backup-btn">Baixar backup (JSON)</button>
+        <button class="btn ghost" id="import-backup-btn">Importar backup (JSON)</button>
+        <input type="file" id="import-backup-input" accept=".json" style="display:none;">
+      </div>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn gold" id="export-html-btn">Baixar HTML atualizado</button>
+      </div>
+      <p class="hint" style="margin-top:8px; margin-bottom:0;">Esse botão baixa o sistema inteiro de novo, já com todos os dados de hoje dentro do arquivo — não precisa importar nada, é só abrir.</p>
+    </div>
+  </section>
+
+  <!-- NOVA PELADA -->
+  <section class="panel" id="panel-nova">
+    <div class="card">
+      <h2><span class="num">1</span>Data da rodada</h2>
+      <div class="row">
+        <div>
+          <label>Data</label>
+          <input type="date" id="pelada-date">
+        </div>
+        <div>
+          <label>Apelido da pelada (opcional)</label>
+          <input type="text" id="pelada-label" placeholder="Ex: Pelada de sexta - quadra do Tonho">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">2</span>Times</h2>
+      <p class="hint">Crie os times que jogaram, escale os jogadores e marque V-E-D de cada time no dia.</p>
+      <div id="teams-container">
+    <div class="team-block" data-team="mqkzt2rfbfnpy3">
+      <div class="team-header">
+        <div style="flex:1; min-width:140px;">
+          <label>Nome do time</label>
+          <input type="text" value="Time A" oninput="updateTeamName('mqkzt2rfbfnpy3', this.value)">
+        </div>
+        <div class="ved-inputs">
+          <div><label>Vitórias</label><input type="number" min="0" value="0" oninput="updateTeamVED('mqkzt2rfbfnpy3','v',this.value)"></div>
+          <div><label>Empates</label><input type="number" min="0" value="0" oninput="updateTeamVED('mqkzt2rfbfnpy3','e',this.value)"></div>
+          <div><label>Derrotas</label><input type="number" min="0" value="0" oninput="updateTeamVED('mqkzt2rfbfnpy3','d',this.value)"></div>
+        </div>
+        
+      </div>
+      <label>Jogadores escalados</label>
+      <div class="checks">
+        
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxrh6idg7b83', this.checked)">
+            Dieguinho
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxro95qi3ax6', this.checked)">
+            Valdeci Jr
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxrr015nzhwo', this.checked)">
+            Flávio
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxrth3pw8pjd', this.checked)">
+            Ivanisio
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxruzzwzomzk', this.checked)">
+            Samuel
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxrw336ut4d9', this.checked)">
+            Alefe
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxs08nir78eq', this.checked)">
+            Artur Cesar
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxs2hr9gcib1', this.checked)">
+            Caynam
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxs41bf77atq', this.checked)">
+            Famicio
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxs7vjcr2dlx', this.checked)">
+            Matheus
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxsbmfa5aoqw', this.checked)">
+            Davi Rosário
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxsd72js8xov', this.checked)">
+            Fausto
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxsrjqtip6o0', this.checked)">
+            Betão
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxstha12e2v9', this.checked)">
+            Daniel
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxswmuu2ggxm', this.checked)">
+            Gabriel Monteiro
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxt53w2o2qrm', this.checked)">
+            Thyago (igapó)
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxt8sr2v9awf', this.checked)">
+            João Batista
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfbfnpy3','mqkxtxvvphmfgf', this.checked)">
+            Davi Amaral
+          </label>
+      </div>
+    </div>
+  
+    <div class="team-block" data-team="mqkzt2rfyc0t9m">
+      <div class="team-header">
+        <div style="flex:1; min-width:140px;">
+          <label>Nome do time</label>
+          <input type="text" value="Time B" oninput="updateTeamName('mqkzt2rfyc0t9m', this.value)">
+        </div>
+        <div class="ved-inputs">
+          <div><label>Vitórias</label><input type="number" min="0" value="0" oninput="updateTeamVED('mqkzt2rfyc0t9m','v',this.value)"></div>
+          <div><label>Empates</label><input type="number" min="0" value="0" oninput="updateTeamVED('mqkzt2rfyc0t9m','e',this.value)"></div>
+          <div><label>Derrotas</label><input type="number" min="0" value="0" oninput="updateTeamVED('mqkzt2rfyc0t9m','d',this.value)"></div>
+        </div>
+        
+      </div>
+      <label>Jogadores escalados</label>
+      <div class="checks">
+        
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxrh6idg7b83', this.checked)">
+            Dieguinho
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxro95qi3ax6', this.checked)">
+            Valdeci Jr
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxrr015nzhwo', this.checked)">
+            Flávio
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxrth3pw8pjd', this.checked)">
+            Ivanisio
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxruzzwzomzk', this.checked)">
+            Samuel
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxrw336ut4d9', this.checked)">
+            Alefe
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxs08nir78eq', this.checked)">
+            Artur Cesar
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxs2hr9gcib1', this.checked)">
+            Caynam
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxs41bf77atq', this.checked)">
+            Famicio
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxs7vjcr2dlx', this.checked)">
+            Matheus
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxsbmfa5aoqw', this.checked)">
+            Davi Rosário
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxsd72js8xov', this.checked)">
+            Fausto
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxsrjqtip6o0', this.checked)">
+            Betão
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxstha12e2v9', this.checked)">
+            Daniel
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxswmuu2ggxm', this.checked)">
+            Gabriel Monteiro
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxt53w2o2qrm', this.checked)">
+            Thyago (igapó)
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxt8sr2v9awf', this.checked)">
+            João Batista
+          </label>
+          <label>
+            <input type="checkbox" onchange="toggleTeamPlayer('mqkzt2rfyc0t9m','mqkxtxvvphmfgf', this.checked)">
+            Davi Amaral
+          </label>
+      </div>
+    </div>
+  </div>
+      <button class="btn ghost" id="add-team-btn">+ Adicionar time</button>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">3</span>Gols e assistências</h2>
+      <p class="hint">Aparece automaticamente todo jogador escalado em algum time acima.</p>
+      <div id="stats-container"><div class="empty">Escale jogadores nos times para lançar estatísticas.</div></div>
+    </div>
+
+    <button class="btn gold" id="save-pelada-btn" style="font-size:15px; padding:13px 22px;">Salvar pelada</button>
+  </section>
+
+  <!-- HISTORICO -->
+  <section class="panel" id="panel-historico">
+    <div class="card">
+      <h2><span class="num">1</span>Peladas registradas</h2>
+      <div id="historico-list">
+    <div class="pelada-item open" data-id="mqkzt2rfselvyt">
+      <div class="ph" onclick="this.parentElement.classList.toggle('open')">
+        <div>
+          <div class="title">Pelada IBRSC - 1</div>
+          <div class="meta">18/06/2026 · 3 time(s)</div>
+        </div>
+        <div class="meta">ver detalhes ▾</div>
+      </div>
+      <div class="pb">
+        
+          <div class="team-result">
+            <strong>Time Amarelo</strong>
+            <span>
+              <span class="badge win">0V</span>
+              <span class="badge draw">0E</span>
+              <span class="badge loss">4D</span>
+            </span>
+          </div>
+          <div style="font-size:12px; color:var(--muted); margin:2px 0 10px;">
+            Betão (0G 1A) · Daniel (1G 0A) · Gabriel Monteiro (0G 0A) · Thyago (igapó) (1G 0A) · João Batista (2G 0A) · Davi Amaral (0G 0A)
+          </div>
+        
+          <div class="team-result">
+            <strong>Time Preto</strong>
+            <span>
+              <span class="badge win">3V</span>
+              <span class="badge draw">1E</span>
+              <span class="badge loss">2D</span>
+            </span>
+          </div>
+          <div style="font-size:12px; color:var(--muted); margin:2px 0 10px;">
+            Dieguinho (0G 3A) · Valdeci Jr (2G 0A) · Flávio (6G 0A) · Ivanisio (0G 4A) · Samuel (0G 1A) · Alefe (0G 1A)
+          </div>
+        
+          <div class="team-result">
+            <strong>Time Branco</strong>
+            <span>
+              <span class="badge win">4V</span>
+              <span class="badge draw">1E</span>
+              <span class="badge loss">1D</span>
+            </span>
+          </div>
+          <div style="font-size:12px; color:var(--muted); margin:2px 0 10px;">
+            Artur Cesar (1G 1A) · Caynam (2G 2A) · Famicio (1G 3A) · Matheus (5G 1A) · Davi Rosário (1G 3A) · Fausto (0G 0A)
+          </div>
+        
+        <div class="pelada-actions">
+          <button class="btn ghost small" onclick="exportPeladaPDF('mqkzt2rfselvyt')">Exportar PDF desta pelada</button>
+          <button class="btn danger small" onclick="deletePelada('mqkzt2rfselvyt')">Excluir pelada</button>
+        </div>
+      </div>
+    </div></div>
+    </div>
+  </section>
+
+  <!-- RANKING -->
+  <section class="panel" id="panel-ranking">
+    <div class="card">
+      <h2><span class="num">1</span>Resumo geral</h2>
+      <div class="stat-grid" id="resumo-cards">
+    <div class="stat-card"><div class="v">1</div><div class="l">Peladas</div></div>
+    <div class="stat-card"><div class="v">18</div><div class="l">Jogadores</div></div>
+    <div class="stat-card"><div class="v">22</div><div class="l">Gols no total</div></div>
+    <div class="stat-card"><div class="v">20</div><div class="l">Assistências</div></div>
+  </div>
+      <table id="ranking-table">
+        <thead><tr>
+          <th data-sort="name">Jogador</th>
+          <th class="num" data-sort="jogos">J</th>
+          <th class="num" data-sort="gols">Gols</th>
+          <th class="num" data-sort="assist">Assist.</th>
+          <th class="num" data-sort="v">V</th>
+          <th class="num" data-sort="e">E</th>
+          <th class="num" data-sort="d">D</th>
+          <th class="num" data-sort="pts">Pts</th>
+        </tr></thead>
+        <tbody id="ranking-body">
+    <tr>
+      <td>Artur Cesar</td>
+      <td class="num">1</td>
+      <td class="num">1</td>
+      <td class="num">1</td>
+      <td class="num"><span class="badge win">4</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">1</span></td>
+      <td class="num"><strong>13</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Caynam</td>
+      <td class="num">1</td>
+      <td class="num">2</td>
+      <td class="num">2</td>
+      <td class="num"><span class="badge win">4</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">1</span></td>
+      <td class="num"><strong>13</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Famicio</td>
+      <td class="num">1</td>
+      <td class="num">1</td>
+      <td class="num">3</td>
+      <td class="num"><span class="badge win">4</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">1</span></td>
+      <td class="num"><strong>13</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Matheus</td>
+      <td class="num">1</td>
+      <td class="num">5</td>
+      <td class="num">1</td>
+      <td class="num"><span class="badge win">4</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">1</span></td>
+      <td class="num"><strong>13</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Davi Rosário</td>
+      <td class="num">1</td>
+      <td class="num">1</td>
+      <td class="num">3</td>
+      <td class="num"><span class="badge win">4</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">1</span></td>
+      <td class="num"><strong>13</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Fausto</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num"><span class="badge win">4</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">1</span></td>
+      <td class="num"><strong>13</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Dieguinho</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">3</td>
+      <td class="num"><span class="badge win">3</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">2</span></td>
+      <td class="num"><strong>10</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Valdeci Jr</td>
+      <td class="num">1</td>
+      <td class="num">2</td>
+      <td class="num">0</td>
+      <td class="num"><span class="badge win">3</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">2</span></td>
+      <td class="num"><strong>10</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Flávio</td>
+      <td class="num">1</td>
+      <td class="num">6</td>
+      <td class="num">0</td>
+      <td class="num"><span class="badge win">3</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">2</span></td>
+      <td class="num"><strong>10</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Ivanisio</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">4</td>
+      <td class="num"><span class="badge win">3</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">2</span></td>
+      <td class="num"><strong>10</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Samuel</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">1</td>
+      <td class="num"><span class="badge win">3</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">2</span></td>
+      <td class="num"><strong>10</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Alefe</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">1</td>
+      <td class="num"><span class="badge win">3</span></td>
+      <td class="num"><span class="badge draw">1</span></td>
+      <td class="num"><span class="badge loss">2</span></td>
+      <td class="num"><strong>10</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Betão</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">1</td>
+      <td class="num"><span class="badge win">0</span></td>
+      <td class="num"><span class="badge draw">0</span></td>
+      <td class="num"><span class="badge loss">4</span></td>
+      <td class="num"><strong>0</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Daniel</td>
+      <td class="num">1</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num"><span class="badge win">0</span></td>
+      <td class="num"><span class="badge draw">0</span></td>
+      <td class="num"><span class="badge loss">4</span></td>
+      <td class="num"><strong>0</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Gabriel Monteiro</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num"><span class="badge win">0</span></td>
+      <td class="num"><span class="badge draw">0</span></td>
+      <td class="num"><span class="badge loss">4</span></td>
+      <td class="num"><strong>0</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Thyago (igapó)</td>
+      <td class="num">1</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num"><span class="badge win">0</span></td>
+      <td class="num"><span class="badge draw">0</span></td>
+      <td class="num"><span class="badge loss">4</span></td>
+      <td class="num"><strong>0</strong></td>
+    </tr>
+  
+    <tr>
+      <td>João Batista</td>
+      <td class="num">1</td>
+      <td class="num">2</td>
+      <td class="num">0</td>
+      <td class="num"><span class="badge win">0</span></td>
+      <td class="num"><span class="badge draw">0</span></td>
+      <td class="num"><span class="badge loss">4</span></td>
+      <td class="num"><strong>0</strong></td>
+    </tr>
+  
+    <tr>
+      <td>Davi Amaral</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num"><span class="badge win">0</span></td>
+      <td class="num"><span class="badge draw">0</span></td>
+      <td class="num"><span class="badge loss">4</span></td>
+      <td class="num"><strong>0</strong></td>
+    </tr>
+  </tbody>
+      </table>
+      <div class="pelada-actions">
+        <button class="btn gold" id="export-resumo-pdf">Exportar PDF do ranking geral</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">2</span>Resumo de uma pelada específica</h2>
+      <p class="hint">Escolha a rodada e baixe a súmula só dela.</p>
+      <div class="row">
+        <div>
+          <label>Pelada</label>
+          <select id="ranking-pelada-select"><option value="mqkzt2rfselvyt">Pelada IBRSC - 1 — 18/06/2026</option></select>
+        </div>
+        <button class="btn ghost" id="export-pelada-from-ranking">Exportar PDF dessa pelada</button>
+        <button class="btn danger" id="delete-pelada-from-ranking">Excluir essa pelada</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>Súmula da Pelada — seus dados ficam salvos automaticamente.</footer>
+</div>
+
+<div class="toast" id="toast">Pelada salva!</div>
+
+<script>
+/* ---------- estado ---------- */
+let state = {"players":[{"id":"mqkxrh6idg7b83","name":"Dieguinho"},{"id":"mqkxro95qi3ax6","name":"Valdeci Jr"},{"id":"mqkxrr015nzhwo","name":"Flávio"},{"id":"mqkxrth3pw8pjd","name":"Ivanisio"},{"id":"mqkxruzzwzomzk","name":"Samuel"},{"id":"mqkxrw336ut4d9","name":"Alefe"},{"id":"mqkxs08nir78eq","name":"Artur Cesar"},{"id":"mqkxs2hr9gcib1","name":"Caynam"},{"id":"mqkxs41bf77atq","name":"Famicio"},{"id":"mqkxs7vjcr2dlx","name":"Matheus"},{"id":"mqkxsbmfa5aoqw","name":"Davi Rosário"},{"id":"mqkxsd72js8xov","name":"Fausto"},{"id":"mqkxsrjqtip6o0","name":"Betão"},{"id":"mqkxstha12e2v9","name":"Daniel"},{"id":"mqkxswmuu2ggxm","name":"Gabriel Monteiro"},{"id":"mqkxt53w2o2qrm","name":"Thyago (igapó)"},{"id":"mqkxt8sr2v9awf","name":"João Batista"},{"id":"mqkxtxvvphmfgf","name":"Davi Amaral"}],"peladas":[{"id":"mqkzt2rfselvyt","date":"2026-06-18","label":"Pelada IBRSC - 1","teams":[{"id":"mqkxqishj3h2nf","name":"Time Amarelo","playerIds":["mqkxsrjqtip6o0","mqkxstha12e2v9","mqkxswmuu2ggxm","mqkxt53w2o2qrm","mqkxt8sr2v9awf","mqkxtxvvphmfgf"],"v":0,"e":0,"d":4},{"id":"mqkxqish5uio96","name":"Time Preto","playerIds":["mqkxrh6idg7b83","mqkxro95qi3ax6","mqkxrr015nzhwo","mqkxrth3pw8pjd","mqkxruzzwzomzk","mqkxrw336ut4d9"],"v":3,"e":1,"d":2},{"id":"mqkxv8m8iibks8","name":"Time Branco","playerIds":["mqkxs08nir78eq","mqkxs2hr9gcib1","mqkxs41bf77atq","mqkxs7vjcr2dlx","mqkxsbmfa5aoqw","mqkxsd72js8xov"],"v":4,"e":1,"d":1}],"stats":{"mqkxsrjqtip6o0":{"gols":0,"assist":1},"mqkxstha12e2v9":{"gols":1,"assist":0},"mqkxswmuu2ggxm":{"gols":0,"assist":0},"mqkxt53w2o2qrm":{"gols":1,"assist":0},"mqkxt8sr2v9awf":{"gols":2,"assist":0},"mqkxtxvvphmfgf":{"gols":0,"assist":0},"mqkxrh6idg7b83":{"gols":0,"assist":3},"mqkxro95qi3ax6":{"gols":2,"assist":0},"mqkxrr015nzhwo":{"gols":6,"assist":0},"mqkxrth3pw8pjd":{"gols":0,"assist":4},"mqkxruzzwzomzk":{"gols":0,"assist":1},"mqkxrw336ut4d9":{"gols":0,"assist":1},"mqkxs08nir78eq":{"gols":1,"assist":1},"mqkxs2hr9gcib1":{"gols":2,"assist":2},"mqkxs41bf77atq":{"gols":1,"assist":3},"mqkxs7vjcr2dlx":{"gols":5,"assist":1},"mqkxsbmfa5aoqw":{"gols":1,"assist":3},"mqkxsd72js8xov":{"gols":0,"assist":0}}}]};
+let sortKey = 'pts', sortDir = -1;
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+const STORAGE_KEY = 'pelada-data-v1';
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) state = JSON.parse(raw);
+  }catch(e){
+    console.error('Falha ao carregar', e);
+    showToast('Não foi possível ler os dados salvos neste navegador.');
+  }
+  if(!state.players) state.players = [];
+  if(!state.peladas) state.peladas = [];
+  renderAll();
+}
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    console.error('Falha ao salvar', e);
+    showToast('Não foi possível salvar. Use o backup em JSON pra não perder dados.');
+  }
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab === 'historico') renderHistorico();
+    if(btn.dataset.tab === 'ranking') renderRanking();
+    if(btn.dataset.tab === 'nova') renderTeams();
+  });
+});
+
+/* ---------- jogadores ---------- */
+document.getElementById('add-player-btn').addEventListener('click', addPlayer);
+document.getElementById('new-player-name').addEventListener('keydown', e=>{ if(e.key==='Enter') addPlayer(); });
+
+function addPlayer(){
+  const input = document.getElementById('new-player-name');
+  const name = input.value.trim();
+  if(!name){ showToast('Digite um nome.'); return; }
+  if(state.players.some(p=>p.name.toLowerCase()===name.toLowerCase())){
+    showToast('Esse jogador já está na lista.'); return;
+  }
+  state.players.push({ id: uid(), name });
+  input.value = '';
+  saveState();
+  renderPlayersList();
+  renderTeams();
+}
+
+function removePlayer(id){
+  if(!confirm('Remover jogador? Os números das peladas já salvas continuam guardados, mas ele some das próximas escalações.')) return;
+  state.players = state.players.filter(p=>p.id!==id);
+  saveState();
+  renderPlayersList();
+  renderTeams();
+}
+
+function renderPlayersList(){
+  const el = document.getElementById('players-list');
+  if(state.players.length===0){
+    el.innerHTML = '<div class="empty"><div class="ball">⚽</div>Nenhum jogador cadastrado ainda.</div>';
+    return;
+  }
+  el.innerHTML = state.players.map(p=>
+    `<span class="player-pill">${escapeHtml(p.name)}<span class="x" onclick="removePlayer('${p.id}')">&times;</span></span>`
+  ).join('');
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------- nova pelada: times ---------- */
+let draftTeams = [];
+
+function resetDraft(){
+  draftTeams = [
+    { id: uid(), name:'Time A', playerIds:[], v:0, e:0, d:0 },
+    { id: uid(), name:'Time B', playerIds:[], v:0, e:0, d:0 }
+  ];
+  document.getElementById('pelada-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('pelada-label').value = '';
+  renderTeams();
+}
+
+document.getElementById('add-team-btn').addEventListener('click', ()=>{
+  const letter = String.fromCharCode(65 + draftTeams.length);
+  draftTeams.push({ id: uid(), name:'Time '+letter, playerIds:[], v:0, e:0, d:0 });
+  renderTeams();
+});
+
+function renderTeams(){
+  const container = document.getElementById('teams-container');
+  if(state.players.length===0){
+    container.innerHTML = '<div class="empty">Cadastre jogadores na aba "Jogadores" primeiro.</div>';
+    document.getElementById('stats-container').innerHTML = '<div class="empty">Escale jogadores nos times para lançar estatísticas.</div>';
+    return;
+  }
+  container.innerHTML = draftTeams.map(team => `
+    <div class="team-block" data-team="${team.id}">
+      <div class="team-header">
+        <div style="flex:1; min-width:140px;">
+          <label>Nome do time</label>
+          <input type="text" value="${escapeHtml(team.name)}" oninput="updateTeamName('${team.id}', this.value)">
+        </div>
+        <div class="ved-inputs">
+          <div><label>Vitórias</label><input type="number" min="0" value="${team.v}" oninput="updateTeamVED('${team.id}','v',this.value)"></div>
+          <div><label>Empates</label><input type="number" min="0" value="${team.e}" oninput="updateTeamVED('${team.id}','e',this.value)"></div>
+          <div><label>Derrotas</label><input type="number" min="0" value="${team.d}" oninput="updateTeamVED('${team.id}','d',this.value)"></div>
+        </div>
+        ${draftTeams.length>2 ? `<button class="btn danger small" onclick="removeTeam('${team.id}')">Remover time</button>` : ''}
+      </div>
+      <label>Jogadores escalados</label>
+      <div class="checks">
+        ${state.players.map(p=>`
+          <label>
+            <input type="checkbox" ${team.playerIds.includes(p.id)?'checked':''} onchange="toggleTeamPlayer('${team.id}','${p.id}', this.checked)">
+            ${escapeHtml(p.name)}
+          </label>`).join('')}
+      </div>
+    </div>
+  `).join('');
+  renderStatsInputs();
+}
+
+function updateTeamName(teamId, val){
+  const t = draftTeams.find(t=>t.id===teamId);
+  if(t) t.name = val;
+}
+function updateTeamVED(teamId, field, val){
+  const t = draftTeams.find(t=>t.id===teamId);
+  if(t) t[field] = Math.max(0, parseInt(val)||0);
+}
+function removeTeam(teamId){
+  draftTeams = draftTeams.filter(t=>t.id!==teamId);
+  renderTeams();
+}
+function toggleTeamPlayer(teamId, playerId, checked){
+  const t = draftTeams.find(t=>t.id===teamId);
+  if(!t) return;
+  if(checked){ if(!t.playerIds.includes(playerId)) t.playerIds.push(playerId); }
+  else{ t.playerIds = t.playerIds.filter(id=>id!==playerId); }
+  renderStatsInputs();
+}
+
+let draftStats = {};
+
+function renderStatsInputs(){
+  const ids = new Set();
+  draftTeams.forEach(t=>t.playerIds.forEach(id=>ids.add(id)));
+  const container = document.getElementById('stats-container');
+  if(ids.size===0){
+    container.innerHTML = '<div class="empty">Escale jogadores nos times para lançar estatísticas.</div>';
+    return;
+  }
+  container.innerHTML = `
+    <table>
+      <thead><tr><th>Jogador</th><th class="num">Gols</th><th class="num">Assistências</th></tr></thead>
+      <tbody>
+        ${[...ids].map(id=>{
+          const p = state.players.find(p=>p.id===id);
+          if(!p) return '';
+          const cur = draftStats[id] || {gols:0, assist:0};
+          return `<tr>
+            <td>${escapeHtml(p.name)}</td>
+            <td class="num"><input type="number" min="0" style="width:70px; text-align:center;" value="${cur.gols}" oninput="updateDraftStat('${id}','gols',this.value)"></td>
+            <td class="num"><input type="number" min="0" style="width:70px; text-align:center;" value="${cur.assist}" oninput="updateDraftStat('${id}','assist',this.value)"></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+}
+function updateDraftStat(id, field, val){
+  if(!draftStats[id]) draftStats[id] = {gols:0, assist:0};
+  draftStats[id][field] = Math.max(0, parseInt(val)||0);
+}
+
+document.getElementById('save-pelada-btn').addEventListener('click', ()=>{
+  if(state.players.length===0){ showToast('Cadastre jogadores antes.'); return; }
+  const date = document.getElementById('pelada-date').value || new Date().toISOString().slice(0,10);
+  const label = document.getElementById('pelada-label').value.trim();
+  const teamsWithPlayers = draftTeams.filter(t=>t.playerIds.length>0);
+  if(teamsWithPlayers.length===0){ showToast('Escale ao menos um jogador em algum time.'); return; }
+
+  const allIds = new Set();
+  teamsWithPlayers.forEach(t=>t.playerIds.forEach(id=>allIds.add(id)));
+  const stats = {};
+  allIds.forEach(id=>{ stats[id] = draftStats[id] || {gols:0, assist:0}; });
+
+  state.peladas.push({
+    id: uid(),
+    date, label,
+    teams: teamsWithPlayers.map(t=>({ id:t.id, name:t.name, playerIds:[...t.playerIds], v:t.v, e:t.e, d:t.d })),
+    stats
+  });
+  saveState();
+  showToast('Pelada salva!');
+  draftStats = {};
+  resetDraft();
+});
+
+/* ---------- historico ---------- */
+function renderHistorico(){
+  const el = document.getElementById('historico-list');
+  if(state.peladas.length===0){
+    el.innerHTML = '<div class="empty"><div class="ball">⚽</div>Nenhuma pelada registrada ainda.</div>';
+    return;
+  }
+  const ordered = [...state.peladas].sort((a,b)=> b.date.localeCompare(a.date));
+  el.innerHTML = ordered.map(pl=>{
+    const dateFmt = formatDate(pl.date);
+    return `
+    <div class="pelada-item" data-id="${pl.id}">
+      <div class="ph" onclick="this.parentElement.classList.toggle('open')">
+        <div>
+          <div class="title">${escapeHtml(pl.label || ('Pelada de '+dateFmt))}</div>
+          <div class="meta">${dateFmt} · ${pl.teams.length} time(s)</div>
+        </div>
+        <div class="meta">ver detalhes ▾</div>
+      </div>
+      <div class="pb">
+        ${pl.teams.map(t=>`
+          <div class="team-result">
+            <strong>${escapeHtml(t.name)}</strong>
+            <span>
+              <span class="badge win">${t.v}V</span>
+              <span class="badge draw">${t.e}E</span>
+              <span class="badge loss">${t.d}D</span>
+            </span>
+          </div>
+          <div style="font-size:12px; color:var(--muted); margin:2px 0 10px;">
+            ${t.playerIds.map(id=>{
+              const p = state.players.find(p=>p.id===id);
+              const s = pl.stats[id] || {gols:0, assist:0};
+              const nm = p ? p.name : '(removido)';
+              return `${escapeHtml(nm)} (${s.gols}G ${s.assist}A)`;
+            }).join(' · ')}
+          </div>
+        `).join('')}
+        <div class="pelada-actions">
+          <button class="btn ghost small" onclick="exportPeladaPDF('${pl.id}')">Exportar PDF desta pelada</button>
+          <button class="btn danger small" onclick="deletePelada('${pl.id}')">Excluir pelada</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deletePelada(id){
+  if(!confirm('Excluir esta pelada permanentemente?')) return;
+  state.peladas = state.peladas.filter(p=>p.id!==id);
+  saveState();
+  renderHistorico();
+  renderRanking();
+}
+
+function formatDate(iso){
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+/* ---------- ranking ---------- */
+function computeRanking(){
+  const map = {};
+  state.players.forEach(p=>{ map[p.id] = { id:p.id, name:p.name, jogos:0, gols:0, assist:0, v:0, e:0, d:0 }; });
+  state.peladas.forEach(pl=>{
+    pl.teams.forEach(t=>{
+      t.playerIds.forEach(id=>{
+        if(!map[id]) map[id] = { id, name:'(removido)', jogos:0, gols:0, assist:0, v:0, e:0, d:0 };
+        map[id].jogos += 1;
+        map[id].v += t.v; map[id].e += t.e; map[id].d += t.d;
+        const s = pl.stats[id] || {gols:0, assist:0};
+        map[id].gols += s.gols; map[id].assist += s.assist;
+      });
+    });
+  });
+  return Object.values(map).map(r=>({ ...r, pts: r.v*3 + r.e }));
+}
+
+function renderRanking(){
+  populatePeladaSelect();
+  const data = computeRanking();
+  const totalGols = data.reduce((a,r)=>a+r.gols,0);
+  const totalAssist = data.reduce((a,r)=>a+r.assist,0);
+  const cards = document.getElementById('resumo-cards');
+  cards.innerHTML = `
+    <div class="stat-card"><div class="v">${state.peladas.length}</div><div class="l">Peladas</div></div>
+    <div class="stat-card"><div class="v">${state.players.length}</div><div class="l">Jogadores</div></div>
+    <div class="stat-card"><div class="v">${totalGols}</div><div class="l">Gols no total</div></div>
+    <div class="stat-card"><div class="v">${totalAssist}</div><div class="l">Assistências</div></div>
+  `;
+
+  data.sort((a,b)=> sortDir * cmp(a,b));
+  const body = document.getElementById('ranking-body');
+  if(data.length===0){
+    body.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:20px;">Sem dados ainda. Registre uma pelada!</td></tr>`;
+    return;
+  }
+  body.innerHTML = data.map(r=>`
+    <tr>
+      <td>${escapeHtml(r.name)}</td>
+      <td class="num">${r.jogos}</td>
+      <td class="num">${r.gols}</td>
+      <td class="num">${r.assist}</td>
+      <td class="num"><span class="badge win">${r.v}</span></td>
+      <td class="num"><span class="badge draw">${r.e}</span></td>
+      <td class="num"><span class="badge loss">${r.d}</span></td>
+      <td class="num"><strong>${r.pts}</strong></td>
+    </tr>
+  `).join('');
+}
+function cmp(a,b){
+  if(sortKey==='name') return a.name.localeCompare(b.name);
+  return (a[sortKey] - b[sortKey]);
+}
+document.querySelectorAll('#ranking-table th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.sort;
+    if(sortKey===key){ sortDir *= -1; } else { sortKey = key; sortDir = key==='name' ? 1 : -1; }
+    renderRanking();
+  });
+});
+
+/* ---------- PDF ---------- */
+function exportPeladaPDF(id){
+  const pl = state.peladas.find(p=>p.id===id);
+  if(!pl) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFont('helvetica','bold'); doc.setFontSize(18);
+  doc.text('Sumula da Pelada', 14, 18);
+  doc.setFont('helvetica','normal'); doc.setFontSize(11);
+  doc.text(`${pl.label || 'Pelada'}  -  ${formatDate(pl.date)}`, 14, 26);
+
+  let y = 36;
+  pl.teams.forEach(t=>{
+    doc.setFont('helvetica','bold'); doc.setFontSize(12);
+    doc.text(`${t.name}  (V ${t.v} - E ${t.e} - D ${t.d})`, 14, y);
+    y += 4;
+    const rows = t.playerIds.map(id=>{
+      const p = state.players.find(p=>p.id===id);
+      const s = pl.stats[id] || {gols:0, assist:0};
+      return [p ? p.name : '(removido)', s.gols, s.assist];
+    });
+    doc.autoTable({
+      startY: y,
+      head: [['Jogador','Gols','Assistencias']],
+      body: rows,
+      theme: 'grid',
+      headStyles: { fillColor: [30,74,44] },
+      margin: { left: 14, right: 14 },
+      styles: { fontSize: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 10;
+  });
+
+  doc.save(`pelada-${pl.date}.pdf`);
+}
+
+function exportResumoPDF(){
+  const data = computeRanking().sort((a,b)=> b.pts - a.pts || b.gols - a.gols);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFont('helvetica','bold'); doc.setFontSize(18);
+  doc.text('Resumo Geral da Pelada', 14, 18);
+  doc.setFont('helvetica','normal'); doc.setFontSize(11);
+  doc.text(`${state.peladas.length} pelada(s) registrada(s) - gerado em ${new Date().toLocaleDateString('pt-BR')}`, 14, 26);
+
+  doc.autoTable({
+    startY: 34,
+    head: [['Jogador','J','Gols','Assist.','V','E','D','Pts']],
+    body: data.map(r=>[r.name, r.jogos, r.gols, r.assist, r.v, r.e, r.d, r.pts]),
+    theme: 'grid',
+    headStyles: { fillColor: [30,74,44] },
+    margin: { left: 14, right: 14 },
+    styles: { fontSize: 10 }
+  });
+
+  doc.save('resumo-pelada.pdf');
+}
+document.getElementById('export-resumo-pdf').addEventListener('click', exportResumoPDF);
+
+function populatePeladaSelect(){
+  const sel = document.getElementById('ranking-pelada-select');
+  const ordered = [...state.peladas].sort((a,b)=> b.date.localeCompare(a.date));
+  if(ordered.length===0){
+    sel.innerHTML = '<option value="">Nenhuma pelada registrada</option>';
+    sel.disabled = true;
+    return;
+  }
+  sel.disabled = false;
+  sel.innerHTML = ordered.map(pl=>
+    `<option value="${pl.id}">${escapeHtml(pl.label || ('Pelada de '+formatDate(pl.date)))} — ${formatDate(pl.date)}</option>`
+  ).join('');
+}
+document.getElementById('export-pelada-from-ranking').addEventListener('click', ()=>{
+  const sel = document.getElementById('ranking-pelada-select');
+  if(!sel.value){ showToast('Nenhuma pelada para exportar.'); return; }
+  exportPeladaPDF(sel.value);
+});
+document.getElementById('delete-pelada-from-ranking').addEventListener('click', ()=>{
+  const sel = document.getElementById('ranking-pelada-select');
+  if(!sel.value){ showToast('Nenhuma pelada para excluir.'); return; }
+  deletePelada(sel.value);
+});
+
+/* ---------- init ---------- */
+function renderAll(){
+  renderPlayersList();
+  resetDraft();
+  renderHistorico();
+  renderRanking();
+}
+
+document.getElementById('export-backup-btn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `backup-pelada-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Backup baixado!');
+});
+
+document.getElementById('import-backup-btn').addEventListener('click', ()=>{
+  document.getElementById('import-backup-input').click();
+});
+document.getElementById('import-backup-input').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(!parsed.players || !parsed.peladas) throw new Error('formato inválido');
+      if(!confirm('Importar este backup vai substituir todos os dados atuais. Continuar?')) return;
+      state = parsed;
+      saveState();
+      renderAll();
+      showToast('Backup importado!');
+    }catch(err){
+      showToast('Arquivo inválido. Selecione um backup gerado por este sistema.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+loadState();
+
+document.getElementById('export-html-btn').addEventListener('click', downloadUpdatedHTML);
+
+function downloadUpdatedHTML(){
+  try{
+    const marker = 'let state = { players: [], peladas: [] };';
+    let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    const seed = 'let state = ' + JSON.stringify(state) + ';';
+    if(html.includes(marker)){
+      html = html.replace(marker, seed);
+    } else {
+      throw new Error('marcador não encontrado');
+    }
+    const blob = new Blob([html], { type:'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pelada-${new Date().toISOString().slice(0,10)}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('HTML atualizado baixado!');
+  }catch(e){
+    console.error(e);
+    showToast('Não consegui gerar o HTML. Use o backup em JSON.');
+  }
+}
+</script>
+
+
+</body></html>
